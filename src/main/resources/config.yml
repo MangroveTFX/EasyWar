@@ -1,0 +1,9 @@
+prefix: '&c&l&oEasy War &f&l> &7'
+
+captured-max-time: 7200
+
+captured-message: '%prefix%%name%&7 was captured&7!'
+
+capturing-message: '%prefix%&7Now capturing %name%&7!'
+
+un-capturing-message: '%prefix%&7No longer capturing %name%&7!'

@@ -1,0 +1,11 @@
+name: Easywar
+version: ${project.version}
+main: com.mattmx.easywar.Main
+api-version: 1.15
+prefix: EasyWar
+authors: [ MattMX ]
+description: An easily understandable war plugin specifically for Polearth
+website: https://www.mattmx.com/
+commands:
+  ewar:
+    description: Main command for Easy War plugin
