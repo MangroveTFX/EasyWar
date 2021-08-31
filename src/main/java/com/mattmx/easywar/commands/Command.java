@@ -4,11 +4,13 @@ import com.mattmx.easygui.Utils;
 import com.mattmx.easywar.Main;
 import com.mattmx.easywar.WarStand;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -49,8 +51,9 @@ public class Command implements CommandExecutor, TabCompleter {
                     e.setInvulnerable(true);
                     e.setCollidable(false);
                     e.setCustomName(Utils.chat(args[1] + " &c&l0"));
-                    new WarStand(e, 0, false, false, args[1]);
+                    new WarStand(e.getUniqueId().toString(), 0, false, false, args[1]);
                     WarStand.saveStands(plugin);
+                    e.getWorld().getChunkAt(e.getLocation()).setForceLoaded(true);
                     break;
                 case "list":
                     if (!p.hasPermission("ewar.list")) return Main.invalidPerm(p);
@@ -77,7 +80,9 @@ public class Command implements CommandExecutor, TabCompleter {
                     if (w == null) return false;
                     Main.STANDS.remove(w);
                     WarStand.saveStands(plugin);
-                    w.stand.remove();
+                    Location l = w.getStand().getLocation();
+                    w.getStand().remove();
+                    l.getWorld().getChunkAt(l).setForceLoaded(false);
                     p.sendMessage(Utils.chat(Main.CHAT_PREFIX + "&7Removed war stand " + w.name));
                     break;
                 case "move":
@@ -91,7 +96,7 @@ public class Command implements CommandExecutor, TabCompleter {
                         }
                     }
                     if (w == null) return false;
-                    w.stand.teleport(new Location(
+                    w.getStand().teleport(new Location(
                             p.getWorld(),
                             p.getLocation().getX(),
                             p.getLocation().getY() + 0.75,
@@ -110,7 +115,7 @@ public class Command implements CommandExecutor, TabCompleter {
                         }
                     }
                     if (w == null) return false;
-                    p.teleport(w.stand.getLocation());
+                    p.teleport(w.getStand().getLocation());
                     p.sendMessage(Utils.chat(Main.CHAT_PREFIX + "&7Teleported you to " + w.name));
                     break;
                 case "rename":
@@ -125,10 +130,17 @@ public class Command implements CommandExecutor, TabCompleter {
                     }
                     if (w == null) return false;
                     if (!(args.length > 2)) return false;
-                    w.stand.setCustomName(Utils.chat(args[2]));
+                    w.getStand().setCustomName(Utils.chat(args[2]));
                     w.name = args[2];
                     break;
                 default:
+                    for (Entity f : p.getWorld().getLivingEntities()) {
+                        try {
+                            p.sendMessage(Utils.chat(f.getCustomName()));
+                        } catch (Exception ignore) {
+
+                        }
+                    }
                     p.sendMessage(Utils.chat(Main.CHAT_PREFIX + "&7Unknown sub command"));
                     break;
             }
